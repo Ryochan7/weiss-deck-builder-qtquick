@@ -236,6 +236,10 @@ bool WeissDeck::canAddCard(WeissCard *card)
     {
         result = false;
     }
+    else if (card->getType() == WeissCard::ClimaxType && m_climaxCount >= 8)
+    {
+        result = false;
+    }
 
     return result;
 }

@@ -22,3 +22,9 @@ HEADERS += \
     weisscardfullmodel.h \
     weissdeck.h
 
+
+copydata.commands = $$QMAKE_COPY -u $$PWD/CardData.sqlite $$OUT_PWD/CardData.sqlite
+first.depends = $(first) copydata
+export(first.depends)
+export(copydata.commands)
+QMAKE_EXTRA_TARGETS += first copydata

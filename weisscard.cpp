@@ -2,6 +2,7 @@
 #include <QApplication>
 #include <QtQml>
 #include <QFileInfo>
+#include <QJsonObject>
 
 #include "weisscard.h"
 
@@ -122,6 +123,31 @@ QString WeissCard::getColorString()
     return result;
 }
 
+WeissCard::CardColor WeissCard::getColorFromString(QString color)
+{
+    QString temp = color.toLower();
+    CardColor result = RedColor;
+
+    if (temp == "red")
+    {
+        result = RedColor;
+    }
+    else if (temp == "green")
+    {
+        result = GreenColor;
+    }
+    else if (temp == "yellow")
+    {
+        result = YellowColor;
+    }
+    else if (temp == "blue")
+    {
+        result = BlueColor;
+    }
+
+    return result;
+}
+
 void WeissCard::setColor(CardColor color)
 {
     this->m_color = color;
@@ -130,32 +156,10 @@ void WeissCard::setColor(CardColor color)
 
 void WeissCard::setColor(QString color)
 {
-    QString temp = color.toLower();
-
-    bool changed = false;
-    if (temp == "red" && this->m_color != RedColor)
+    CardColor colorType = getColorFromString(color);
+    if (this->m_color != colorType)
     {
-        this->m_color = RedColor;
-        changed = true;
-    }
-    else if (temp == "green" && this->m_color != GreenColor)
-    {
-        this->m_color = GreenColor;
-        changed = true;
-    }
-    else if (temp == "yellow" && this->m_color != YellowColor)
-    {
-        this->m_color = YellowColor;
-        changed = true;
-    }
-    else if (temp == "blue" && this->m_color != BlueColor)
-    {
-        this->m_color = BlueColor;
-        changed = true;
-    }
-
-    if (changed)
-    {
+        this->m_color = colorType;
         emit colorChanged(this->m_color);
     }
 }
@@ -184,6 +188,27 @@ QString WeissCard::getTypeString()
     return result;
 }
 
+WeissCard::CardType WeissCard::getTypeFromString(QString type)
+{
+    QString temp = type.toLower();
+    CardType result = CharacterType;
+
+    if (temp == "character")
+    {
+        result = CharacterType;
+    }
+    else if (temp == "climax")
+    {
+        result = ClimaxType;
+    }
+    else if (temp == "event")
+    {
+        result = EventType;
+    }
+
+    return result;
+}
+
 void WeissCard::setType(CardType type)
 {
     this->m_type = type;
@@ -192,27 +217,10 @@ void WeissCard::setType(CardType type)
 
 void WeissCard::setType(QString type)
 {
-    QString temp = type.toLower();
-    bool changed = false;
-
-    if (temp == "character" && this->m_type != CharacterType)
+    CardType temp = getTypeFromString(type);
+    if (this->m_type != temp)
     {
-        this->m_type = CharacterType;
-        changed = true;
-    }
-    else if (temp == "climax" && this->m_type != ClimaxType)
-    {
-        this->m_type = ClimaxType;
-        changed = true;
-    }
-    else if (temp == "event" && this->m_type != EventType)
-    {
-        this->m_type = EventType;
-        changed = true;
-    }
-
-    if (changed)
-    {
+        this->m_type = temp;
         emit typeChanged(this->m_type);
     }
 }
@@ -329,57 +337,10 @@ void WeissCard::setTrigger(CardTrigger trigger)
 
 void WeissCard::setTrigger(QString trigger)
 {
-    QString temp = trigger.toLower();
-    bool changed = false;
-
-    if (temp == "" && this->m_trigger != NoneTrigger)
+    CardTrigger temp = getTriggerFromString(trigger);
+    if (this->m_trigger != temp)
     {
-        this->m_trigger = NoneTrigger;
-        changed = true;
-    }
-    else if (temp == "soul+1" && this->m_trigger != SoulPlus1Trigger)
-    {
-        this->m_trigger = SoulPlus1Trigger;
-        changed = true;
-    }
-    else if (temp == "soul+2" && this->m_trigger != SoulPlus2Trigger)
-    {
-        this->m_trigger = SoulPlus2Trigger;
-        changed = true;
-    }
-    else if (temp == "return" && this->m_trigger != ReturnTrigger)
-    {
-        this->m_trigger = ReturnTrigger;
-        changed = true;
-    }
-    else if (temp == "shot" && this->m_trigger != ShotTrigger)
-    {
-        this->m_trigger = ShotTrigger;
-        changed = true;
-    }
-    else if (temp == "comeback" && this->m_trigger != ComebackTrigger)
-    {
-        this->m_trigger = ComebackTrigger;
-        changed = true;
-    }
-    else if (temp == "treasure" && this->m_trigger != TreasureTrigger)
-    {
-        this->m_trigger = TreasureTrigger;
-        changed = true;
-    }
-    else if (temp == "pool" && this->m_trigger != PoolTrigger)
-    {
-        this->m_trigger = PoolTrigger;
-        changed = true;
-    }
-    else if (temp == "draw" && this->m_trigger != DrawTrigger)
-    {
-        this->m_trigger = DrawTrigger;
-        changed = true;
-    }
-
-    if (changed)
-    {
+        this->m_trigger = temp;
         emit triggerChanged(this->m_trigger);
     }
 }
@@ -423,6 +384,51 @@ void WeissCard::setTriggerFromSQL(QString triggerCode)
     {
         setTrigger(DrawTrigger);
     }
+}
+
+WeissCard::CardTrigger WeissCard::getTriggerFromString(QString trigger)
+{
+    QString temp = trigger.toLower();
+    CardTrigger result = NoneTrigger;
+
+    if (temp == "")
+    {
+        result = NoneTrigger;
+    }
+    else if (temp == "soul+1")
+    {
+        result = SoulPlus1Trigger;
+    }
+    else if (temp == "soul+2")
+    {
+        result = SoulPlus2Trigger;
+    }
+    else if (temp == "return")
+    {
+        result = ReturnTrigger;
+    }
+    else if (temp == "shot")
+    {
+        result = ShotTrigger;
+    }
+    else if (temp == "comeback")
+    {
+        result = ComebackTrigger;
+    }
+    else if (temp == "treasure")
+    {
+        result = TreasureTrigger;
+    }
+    else if (temp == "pool")
+    {
+        result = PoolTrigger;
+    }
+    else if (temp == "draw")
+    {
+        result = DrawTrigger;
+    }
+
+    return result;
 }
 
 QString WeissCard::getTriggerSQLCode()
@@ -684,6 +690,52 @@ bool WeissCard::validPower(int power)
     }
 
     return result;
+}
+
+void WeissCard::read(QJsonObject &jsonObj)
+{
+    m_id = jsonObj.value("cid").toString();
+    m_name = jsonObj.value("name").toString();
+    m_nameEn = jsonObj.value("name_e").toString();
+    m_color = getColorFromString(jsonObj.value("color").toString());
+    m_type = getTypeFromString(jsonObj.value("type").toString());
+    m_level = jsonObj.value("level").toInt();
+    m_cost = jsonObj.value("cost").toInt();
+    m_soul = jsonObj.value("soul").toInt();
+    m_power = jsonObj.value("power").toInt();
+    m_trigger = getTriggerFromString(jsonObj.value("trigger").toString());
+    m_description = jsonObj.value("description").toString();
+    m_descriptionEn = jsonObj.value("description_e").toString();
+    m_flavor = jsonObj.value("flavor").toString();
+    m_flavorEn = jsonObj.value("flavor_e").toString();
+    m_trait = jsonObj.value("trait").toString();
+    m_traitEn = jsonObj.value("trait_e").toString();
+    m_trait2 = jsonObj.value("trait2").toString();
+    m_trait2En = jsonObj.value("trait2_e").toString();
+    m_imageFileName = jsonObj.value("imagefilename").toString();
+}
+
+void WeissCard::write(QJsonObject &jsonObj)
+{
+    jsonObj.insert("cid", m_id);
+    jsonObj.insert("name", m_name);
+    jsonObj.insert("name_e", m_nameEn);
+    jsonObj.insert("color", getColorString());
+    jsonObj.insert("type", getTypeString());
+    jsonObj.insert("level", m_level);
+    jsonObj.insert("cost", m_cost);
+    jsonObj.insert("soul", m_soul);
+    jsonObj.insert("power", m_power);
+    jsonObj.insert("trigger", getTriggerString());
+    jsonObj.insert("description", m_description);
+    jsonObj.insert("description_e", m_descriptionEn);
+    jsonObj.insert("flavor", m_flavor);
+    jsonObj.insert("flavor_e", m_flavorEn);
+    jsonObj.insert("trait", m_trait);
+    jsonObj.insert("trait_e", m_traitEn);
+    jsonObj.insert("trait2", m_trait2);
+    jsonObj.insert("trait2_e", m_trait2En);
+    jsonObj.insert("imagefilename", m_imageFileName);
 }
 
 void WeissCard::registerQmlType()

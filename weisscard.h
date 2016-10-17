@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QString>
+#include <QJsonObject>
 
 class WeissCard : public QObject
 {
@@ -81,11 +82,13 @@ public:
 
     CardColor getColor();
     Q_INVOKABLE QString getColorString();
+    CardColor getColorFromString(QString color);
     void setColor(CardColor color);
     void setColor(QString color);
 
     CardType getType();
     Q_INVOKABLE QString getTypeString();
+    CardType getTypeFromString(QString type);
     void setType(CardType type);
     void setType(QString type);
 
@@ -103,6 +106,7 @@ public:
 
     CardTrigger getTrigger();
     Q_INVOKABLE QString getTriggerString();
+    CardTrigger getTriggerFromString(QString trigger);
     QString getTriggerSQLCode();
     static QString getTriggerSQLCode(CardTrigger trigger);
     void setTrigger(CardTrigger trigger);
@@ -139,6 +143,9 @@ public:
     QString getImageFileName();
     void setImageFileName(QString imageFileName);
     Q_INVOKABLE QString getImageFilePath();
+
+    void read(QJsonObject &jsonObj);
+    void write(QJsonObject &jsonObj);
 
     static void registerQmlType();
 

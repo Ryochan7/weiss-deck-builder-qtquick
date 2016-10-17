@@ -162,6 +162,12 @@ void WeissCardModel::clear()
     endResetModel();
 }
 
+void WeissCardModel::resetCards()
+{
+    beginResetModel();
+    endResetModel();
+}
+
 bool WeissCardModel::addCard(WeissCard *card, int maxAdd)
 {
     bool result = false;

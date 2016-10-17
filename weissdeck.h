@@ -76,6 +76,9 @@ public:
     int getUniqueCardCount(WeissCard *card) const;
     bool containsCard(WeissCard *card);
 
+    Q_INVOKABLE void read(QString inputFilePath);
+    Q_INVOKABLE void write(QString outputFilePath);
+
 protected:
     void updateDeckStats(WeissCard *card, bool increment);
     WeissCard* cardToUse(WeissCard *card);

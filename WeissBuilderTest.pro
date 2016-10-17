@@ -6,7 +6,8 @@ SOURCES += main.cpp \
     weisscardmodel.cpp \
     weisscard.cpp \
     weisscardfullmodel.cpp \
-    weissdeck.cpp
+    weissdeck.cpp \
+    util.cpp
 
 RESOURCES += qml.qrc
 
@@ -20,7 +21,8 @@ HEADERS += \
     weisscardmodel.h \
     weisscard.h \
     weisscardfullmodel.h \
-    weissdeck.h
+    weissdeck.h \
+    util.h
 
 
 copydata.commands = $$QMAKE_COPY -u $$PWD/CardData.sqlite $$OUT_PWD/CardData.sqlite

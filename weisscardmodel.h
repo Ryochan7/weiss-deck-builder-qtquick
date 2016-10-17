@@ -42,6 +42,7 @@ public:
     Q_INVOKABLE WeissCard* get(int row);
     Q_INVOKABLE WeissDeck* getDeck();
     Q_INVOKABLE void clear();
+    Q_INVOKABLE void resetCards();
     Q_INVOKABLE bool canAddCard();
     Q_INVOKABLE bool addCard(WeissCard *card, int maxAdd);
     Q_INVOKABLE void removeCard(WeissCard *card, int maxRemove);

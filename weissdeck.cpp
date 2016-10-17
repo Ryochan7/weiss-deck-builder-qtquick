@@ -1,5 +1,9 @@
-#include <QDebug>
+//#include <QDebug>
 #include <QListIterator>
+#include <QFile>
+#include <QJsonObject>
+#include <QJsonDocument>
+#include <QJsonArray>
 
 #include "weissdeck.h"
 
@@ -439,4 +443,76 @@ void WeissDeck::clearDeck()
 bool WeissDeck::containsCard(WeissCard *card)
 {
     return m_duplicateCardHash.contains(card->getCId());
+}
+
+void WeissDeck::read(QString inputFilePath)
+{
+    clearDeck();
+
+    QFile inputFile(inputFilePath);
+    if (inputFile.open(QIODevice::ReadOnly))
+    {
+        QByteArray deckData = inputFile.readAll();
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(deckData);
+        QJsonObject jsonObj = jsonDoc.object();
+        setDeckName(jsonObj.value("deckName").toString());
+        QJsonArray cardArray = jsonObj.value("cards").toArray();
+        for (int i = 0; i < cardArray.size(); i++)
+        {
+            QJsonObject cardObject = cardArray.at(i).toObject();
+            int quantity = cardObject.value("quantity").toInt(0);
+            for (int i = 0; i < quantity; i++)
+            {
+                WeissCard *temp = new WeissCard(this);
+                temp->read(cardObject);
+                m_cards.append(temp);
+                if (!containsCard(temp))
+                {
+                    m_duplicateCardHash.insert(temp->getCId(), 1);
+                    m_uniqueCards.append(temp);
+                    m_cardRepo.insert(temp->getCId(), temp);
+                }
+                else
+                {
+                    int count = m_duplicateCardHash.value(temp->getCId()) + 1;
+                    m_duplicateCardHash.insert(temp->getCId(), count);
+                }
+            }
+        }
+
+        inputFile.close();
+
+        QListIterator<WeissCard*> iter(m_cards);
+        while (iter.hasNext())
+        {
+            WeissCard *temp = iter.next();
+            updateDeckStats(temp, true);
+        }
+    }
+}
+
+void WeissDeck::write(QString outputFilePath)
+{
+    QFile outputFile(outputFilePath);
+    if (outputFile.open(QIODevice::WriteOnly))
+    {
+        QJsonObject jsonObj;
+        jsonObj.insert("deckName", getDeckName());
+        QJsonArray cardArray;
+        QListIterator<WeissCard*> iter(m_uniqueCards);
+        while (iter.hasNext())
+        {
+            WeissCard *temp = iter.next();
+            QJsonObject cardObject;
+            temp->write(cardObject);
+            cardObject.insert("quantity", m_duplicateCardHash.value(temp->getCId()));
+            cardArray.append(cardObject);
+        }
+
+        jsonObj.insert("cards", cardArray);
+
+        QJsonDocument jsonDoc(jsonObj);
+        outputFile.write(jsonDoc.toJson());
+        outputFile.close();
+    }
 }

@@ -2,6 +2,7 @@ import QtQuick 2.3
 import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.1
 import QtQuick.Controls.Styles 1.4
+import QtQuick.Dialogs 1.2
 
 import com.mycompany.qmlcomponents 1.0
 
@@ -34,6 +35,53 @@ ApplicationWindow {
         cardLevelSearchCombo.currentIndex = -1
         cardTraitSearchText.text = ""
         cardAbilitySearchText.text = ""
+    }
+
+    function saveDeckFile()
+    {
+        var temp = util.convertUrlToNativeFilePath(Qt.resolvedUrl(fileDialog.fileUrl));
+        var re = new RegExp("\.json$", "g");
+        if (!temp.match(re))
+        {
+            temp = temp + ".json";
+        }
+
+        realDeck.write(temp);
+    }
+
+    function loadDeckFile()
+    {
+        var temp = util.convertUrlToNativeFilePath(Qt.resolvedUrl(fileDialog.fileUrl));
+        var re = new RegExp("\.json$", "g");
+        if (!temp.match(re))
+        {
+            temp = temp + ".json";
+        }
+
+        deckModel.clear();
+        realDeck.read(temp);
+        deckModel.resetCards();
+    }
+
+    function closingSaveDialogConnections()
+    {
+        fileDialog.accepted.disconnect(saveDeckFile);
+        fileDialog.accepted.disconnect(closingSaveDialogConnections);
+        fileDialog.rejected.disconnect(closingSaveDialogConnections);
+    }
+
+    function closingLoadDialogConnections()
+    {
+        fileDialog.accepted.disconnect(loadDeckFile);
+        fileDialog.accepted.disconnect(closingLoadDialogConnections);
+        fileDialog.rejected.disconnect(closingLoadDialogConnections);
+    }
+
+    FileDialog {
+        id: fileDialog
+        title: "Please choose a file"
+        visible: false
+        nameFilters: [ "Json (*.json)" ]
     }
 
     menuBar: MenuBar {
@@ -453,6 +501,12 @@ ApplicationWindow {
                     text: "Save"
 
                     onClicked: {
+                        fileDialog.setTitle("Save deck json file");
+                        fileDialog.selectExisting = false;
+                        fileDialog.accepted.connect(saveDeckFile);
+                        fileDialog.accepted.connect(closingSaveDialogConnections);
+                        fileDialog.rejected.connect(closingSaveDialogConnections);
+                        fileDialog.open();
                     }
                 }
 
@@ -460,6 +514,12 @@ ApplicationWindow {
                     text: "Load"
 
                     onClicked: {
+                        fileDialog.setTitle("Choose deck json file");
+                        fileDialog.selectExisting = true;
+                        fileDialog.accepted.connect(loadDeckFile);
+                        fileDialog.accepted.connect(closingLoadDialogConnections);
+                        fileDialog.rejected.connect(closingLoadDialogConnections);
+                        fileDialog.open();
                     }
                 }
 
@@ -578,7 +638,10 @@ ApplicationWindow {
                             width: 60
 
                             onClicked: {
-                                deckModel.addCard(collectionView.model.get(collectionView.currentRow), 1);
+                                if (collectionView.currentRow >= 0)
+                                {
+                                    deckModel.addCard(collectionView.model.get(collectionView.currentRow), 1);
+                                }
                             }
                         }
 
@@ -587,7 +650,10 @@ ApplicationWindow {
                             width: 60
 
                             onClicked: {
-                                deckModel.addCard(collectionView.model.get(collectionView.currentRow), 4);
+                                if (collectionView.currentRow >= 0)
+                                {
+                                    deckModel.addCard(collectionView.model.get(collectionView.currentRow), 4);
+                                }
                             }
                         }
 
@@ -596,7 +662,10 @@ ApplicationWindow {
                             width: 60
 
                             onClicked: {
-                                deckModel.removeCard(collectionView.model.get(collectionView.currentRow), 1);
+                                if (collectionView.currentRow >= 0)
+                                {
+                                    deckModel.removeCard(collectionView.model.get(collectionView.currentRow), 1);
+                                }
                             }
                         }
 
@@ -605,7 +674,10 @@ ApplicationWindow {
                             width: 60
 
                             onClicked: {
-                                deckModel.removeCard(collectionView.model.get(collectionView.currentRow), 4);
+                                if (collectionView.currentRow >= 0)
+                                {
+                                    deckModel.removeCard(collectionView.model.get(collectionView.currentRow), 4);
+                                }
                             }
                         }
                     }

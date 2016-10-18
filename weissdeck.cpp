@@ -465,17 +465,25 @@ void WeissDeck::read(QString inputFilePath)
             {
                 WeissCard *temp = new WeissCard(this);
                 temp->read(cardObject);
-                m_cards.append(temp);
-                if (!containsCard(temp))
+                if (canAddCard(temp))
                 {
-                    m_duplicateCardHash.insert(temp->getCId(), 1);
-                    m_uniqueCards.append(temp);
-                    m_cardRepo.insert(temp->getCId(), temp);
+                    m_cards.append(temp);
+                    if (!containsCard(temp))
+                    {
+                        m_duplicateCardHash.insert(temp->getCId(), 1);
+                        m_uniqueCards.append(temp);
+                        m_cardRepo.insert(temp->getCId(), temp);
+                    }
+                    else
+                    {
+                        int count = m_duplicateCardHash.value(temp->getCId()) + 1;
+                        m_duplicateCardHash.insert(temp->getCId(), count);
+                    }
                 }
                 else
                 {
-                    int count = m_duplicateCardHash.value(temp->getCId()) + 1;
-                    m_duplicateCardHash.insert(temp->getCId(), count);
+                    delete temp;
+                    temp = 0;
                 }
             }
         }
